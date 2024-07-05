@@ -18,4 +18,11 @@ buildscript {
     }
 }
 
+// logrocket configuration
+allprojects {
+    repositories {
+        maven { url "https://storage.googleapis.com/logrocket-maven/" }
+    }
+}
+
 apply plugin: "com.facebook.react.rootproject"
