@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "env":"npx react-native doctor"
+    "env": "npx react-native doctor"
   },
   "dependencies": {
     "@logrocket/react-native": "^1.33.7",

@@ -24,6 +24,7 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import { NativeFunction } from './utils/NativeModule';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -62,6 +63,8 @@ function App(): React.JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  NativeFunction.stopMonitoring();
+  
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
