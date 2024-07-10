@@ -6,13 +6,14 @@
  */
 
 import React from 'react';
-import type {PropsWithChildren} from 'react';
+import type { PropsWithChildren } from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
@@ -30,7 +31,7 @@ type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
-function Section({children, title}: SectionProps): React.JSX.Element {
+function Section({ children, title }: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -63,8 +64,8 @@ function App(): React.JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  NativeFunction.stopMonitoring();
-  
+  //NativeFunction.stopMonitoring();
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -79,20 +80,12 @@ function App(): React.JSX.Element {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+          <TouchableOpacity style={styles.touch} onPress={() => { NativeFunction.startMonitoring() }}>
+            <Text style={styles.touchText}>Start</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.touch} onPress={() => { NativeFunction.stopMonitoring() }}>
+            <Text style={styles.touchText}>Stop</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -100,6 +93,10 @@ function App(): React.JSX.Element {
 }
 
 const styles = StyleSheet.create({
+  touch: { backgroundColor: "#dddddd", padding: 10, margin: 10, alignSelf: 'center' },
+  touchText: {
+    fontSize: 22
+  },
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
