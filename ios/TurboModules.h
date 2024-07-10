@@ -11,8 +11,12 @@
 
 #define TurboModules_h
 
-extern BOOL running=NO;
+
 @interface TurboModules : NSObject <RCTBridgeModule>
+
+@property BOOL running;
+// Define a property for the dispatch queue
+@property (nonatomic, strong) dispatch_queue_t monitorQueue;
 
 @end
 #endif /* TurboModules_h */
