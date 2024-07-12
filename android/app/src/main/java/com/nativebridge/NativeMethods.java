@@ -43,4 +43,9 @@ public class NativeMethods extends ReactContextBaseJavaModule {
     public void checkRam(Promise promise) {
         promise.resolve(CommonUtils.monitorRamUsage(mContext).toString());
     }
+
+    @ReactMethod
+    public void setThreshold(String val,String type) {
+        CommonUtils.setThreshold(Integer.parseInt(val),type);
+    }
 }

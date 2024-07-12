@@ -1,9 +1,9 @@
-import { NativeModules } from "react-native";
+import { NativeModules } from 'react-native';
 
 export const NativeFunction = {
-    checkDeviceModel: NativeModules.NativeMethods.checkDeviceModel,
-    checkRam: NativeModules.NativeMethods.checkRam,
-
-    // startMonitoring: NativeModules.TurboModules.startMonitoring,
-    // stopMonitoring: NativeModules.TurboModules.stopMonitoring,
-}
+  checkDeviceModel: NativeModules.NativeMethods.checkDeviceModel,
+  checkRam: NativeModules.NativeMethods.checkRam,
+  setThreshold: NativeModules.NativeMethods.setThreshold,
+  // startMonitoring: NativeModules.TurboModules.startMonitoring,
+  // stopMonitoring: NativeModules.TurboModules.stopMonitoring,
+};

@@ -18,10 +18,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CommonUtils {
         public static String PACKAGE_NAME = "com.stdapp";
-//    public static String PACKAGE_NAME = "com.hoolva.android";com.stdapp
+    public static int totalMemory = 0; // in MB
+    public static int availableMemory = 0; // in MB
+    public static  float usedMemory=0;
+    public static float threshold=1L;
+    //    public static String PACKAGE_NAME = "com.hoolva.android";com.stdapp
     public static void getAppCpuUsage(Context context) {
 //        ActivityManager activityManager = (ActivityManager) getSystemService(context,Object.class);
         ActivityManager.RunningAppProcessInfo runningAppProcessInfo = getRunningAppProcessInfo(context);
@@ -61,37 +66,50 @@ public class CommonUtils {
         return null;
     }
 
-    public static List<Long> monitorRamUsage(Context context) {
+    public static List<Number> monitorRamUsage(Context context) {
         ActivityManager activityManager = getSystemService(context,ActivityManager.class);
         ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
         activityManager.getMemoryInfo(memoryInfo);
 
-        Long totalMemory = memoryInfo.totalMem / 1024 / 1024; // in MB
-        Long availableMemory = memoryInfo.availMem / 1024 / 1024; // in MB
-        Long usedMemory = totalMemory - availableMemory;
-        List<Long> list = new ArrayList<>();
+        totalMemory = (int) (memoryInfo.totalMem / 1024 / 1024); // in MB
+        usedMemory = totalMemory - availableMemory;
+        availableMemory = (int) (memoryInfo.availMem / 1024 / 1024); // in MB
+        List<Number> list = new ArrayList<>();
         list.add(totalMemory);
         list.add(usedMemory);
         list.add(availableMemory);
 
-        Log.d("TAG", "Total Memory: " + totalMemory + " MB");
-        Log.d("TAG", "Available Memory: " + availableMemory + " MB");
-        Log.d("TAG", "Used Memory: " + usedMemory + " MB");
+//        Log.d("TAG", "Total Memory: " + totalMemory + " MB");
+//        Log.d("TAG", "Available Memory: " + availableMemory + " MB");
+//        Log.d("TAG", "Used Memory: " + usedMemory + " MB");
 
-        if (usedMemory > (totalMemory * 0.5)) { // If used memory exceeds 80% of total memory
+        if (usedMemory > (totalMemory * threshold)) { // If used memory exceeds 80% of total memory
             // Trigger an alert
             showRamUsageAlert(usedMemory, totalMemory,context);
         }
         return list;
     }
 
-    private static void showRamUsageAlert(long usedMemory, long totalMemory, Context context) {
+    public static void setThreshold(int val,String type){
+
+        if (Objects.equals(type, "MB")){
+            threshold= (float) val /totalMemory;
+            Log.d("valMB", String.valueOf(threshold));
+        }else{
+            threshold= (long) val;
+            Log.d("val", String.valueOf(threshold));
+        }
+    }
+
+    private static void showRamUsageAlert(float usedMemory, long totalMemory, Context context) {
         String CHANNEL_ID = "RAM_USAGE_ALERT_CHANNEL";
         String channelName = "RAM Usage Alert";
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(context,NotificationManager.class);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_HIGH);
+            channel.setSound(null, null);  // No sound
+            channel.enableVibration(false);
             notificationManager.createNotificationChannel(channel);
         }
 
@@ -99,8 +117,10 @@ public class CommonUtils {
                 .setContentTitle("RAM Usage Alert")
                 .setContentText("Used RAM: " + usedMemory + " MB / " + totalMemory + " MB")
                 .setSmallIcon(R.drawable.rn_edit_text_material)
-                .setVibrate(null)
+
+//                .setVibrate(null)
                 .build();
+        assert notificationManager != null;
         notificationManager.notify(1, notification);
     }
 }
