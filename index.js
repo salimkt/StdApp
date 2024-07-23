@@ -9,5 +9,9 @@ import LogRocket from '@logrocket/react-native';
 
 // add logrocket '<APP_SLUG>' here
 LogRocket.init('40ii7i/osl')
+console.log("Check---------", global.ErrorUtils)
 
-AppRegistry.registerComponent(appName, () => App);
+
+AppRegistry.registerComponent(appName, () =>
+    App
+);
