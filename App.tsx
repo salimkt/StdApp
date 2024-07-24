@@ -5,11 +5,9 @@
  * @format
  */
 
-import React, { useEffect, useState } from 'react';
-import type { PropsWithChildren } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
-  Button,
-  NativeEventEmitter,
+  AppState,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -22,197 +20,114 @@ import {
 
 import {
   Colors,
-  DebugInstructions,
   Header,
-  LearnMoreLinks,
-  ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import { NativeFunction } from './utils/NativeModule';
-import ErrorBoundary from 'react-native-error-boundary';
 import axios from 'axios';
-
-
-
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({ children, title }: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-const CustomFallback = (props: { error: Error, resetError: Function }) => {
-  console.log("Error-------", props.error)
-  return (<View>
-    <Text>Something happened!</Text>
-    <Text>{props.error.toString()}</Text>
-    <Button onPress={() => props.resetError} title={'Try again'} />
-  </View>
-  )
-}
-
-export const setJSExceptionHandler = (customHandler: any, allowedInDevMode = false) => {
-
-  const globalAny: any = global;
-  if (typeof allowedInDevMode !== "boolean" || typeof customHandler !== "function") {
-    console.log("setJSExceptionHandler is called with wrong argument types.. first argument should be callback function and second argument is optional should be a boolean");
-    console.log("Not setting the JS handler .. please fix setJSExceptionHandler call");
-    return;
-  }
-  const allowed = allowedInDevMode ? true : true;
-  if (allowed) {
-    globalAny.ErrorUtils.setGlobalHandler(customHandler);
-  } else {
-    console.log("Skipping setJSExceptionHandler: Reason: In DEV mode and allowedInDevMode = false");
-  }
-};
-
-
+import Grafana from 'react-native-grafana'
 
 function App(): React.JSX.Element {
 
+  const appState = useRef(AppState.currentState);
 
+  useEffect(() => {
+    Grafana.init({ uri: "test", sessionId: 123 });
+  }, [])
 
-  let ws: any;
+  const _handleAppStateChange = (nextAppState: any) => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      Grafana.sendLog("10:2");
+    } else {
+      appState.current = nextAppState;
+      Grafana.sendLog("10:1");
+    }
+  }
 
-  function connectWebSocket() {
-    ws = new WebSocket("ws://192.168.1.12:8080");
-
-    ws.onopen = function () {
-      console.log("open-------------")
+  useEffect(() => {
+    const backgroundHandler = AppState.addEventListener("change", _handleAppStateChange);
+    return () => {
+      backgroundHandler.remove();
     };
 
-    ws.onmessage = function (event: any) {
-      console.log("data", event.data)
-    };
-
-    ws.onclose = function () {
-      console.log("close-------------")
-    }
-  }
-
-  function sendMessage() {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      const message = "Hello Server";
-      ws.send(message);
-      console.log("Message-----", message)
-    }
-  }
-
-  function closeConnection() {
-    if (ws) {
-      ws.close();
-    }
-  }
-
-
+  }, [])
 
 
   const startHandler = () => {
-    sendMessage();
+    Grafana.sendLog("1:1:1");
   }
 
   const stopHandler = () => {
-    closeConnection();
+    Grafana.sendLog("1:1:2");
   }
 
+  const makeError = () => {
+    Grafana.sendLog("1:1:3");
 
+    //undefined error- test() not defined
+    Grafana.test();
+  }
 
-  // socket.onopen = (event: any) => {
-  //   console.log("Event--", event)
-  //   socket.send("Here's some text that the server is urgently awaiting!");
-  // };
+  (async () => {
+    axios.interceptors.request.use(
+      function (req: any) {
+        req.time = { startTime: new Date() };
+        console.log("CHECK----AXIOS--req", req)
+        Grafana.sendLog("5:1");
+        return req;
+      },
+      (err: any) => {
+        Grafana.sendLog("5:2");
+        return Promise.reject(err);
+      }
+    );
 
+    axios.interceptors.response.use(
+      function (res: any) {
+        Grafana.sendLog("5:3");
+        res.config.time.endTime = new Date();
+        res.duration =
+          res.config.time.endTime - res.config.time.startTime;
+        return res;
+      },
+      (err: any) => {
+        Grafana.sendLog("5:4");
+        console.log("CHECK----AXIOS--err", err)
+        return Promise.reject(err);
+      }
+    );
+  })();
 
+  const apiCallHandler1 = () => {
+    axios
+      .get("https://dummy.restapiexample.com/api//employees")
+      .then((res: any) => {
+        console.log(res.duration)
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  }
 
+  const apiCallHandler2 = () => {
+    axios
+      .get("https://dummy.restapiexample.com/api/v1/employees")
+      .then((res: any) => {
+        console.log(res.duration)
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  }
 
-
-  // (async () => {
-  //   axios.interceptors.request.use(
-  //     function (req: any) {
-  //       req.time = { startTime: new Date() };
-  //       console.log("CHECK----AXIOS--req", req)
-  //       return req;
-  //     },
-  //     (err: any) => {
-  //       console.log("CHECK----AXIOS--err", err)
-  //       return Promise.reject(err);
-  //     }
-  //   );
-
-  //   axios.interceptors.response.use(
-  //     function (res: any) {
-  //       console.log("CHECK----AXIOS--res", res)
-  //       res.config.time.endTime = new Date();
-  //       res.duration =
-  //         res.config.time.endTime - res.config.time.startTime;
-  //       return res;
-  //     },
-  //     (err: any) => {
-  //       console.log("CHECK----AXIOS--err", err)
-  //       return Promise.reject(err);
-  //     }
-  //   );
-
-
-  //})();
-
-  // const startHandler = () => {
-  //   testEmitter.emit('clickHandler', 1.1)
-  //   //axios.test();
-  //   // axios
-  //   //   .get("https://dummy.restapiexample.com/api/v1/employees")
-  //   //   .then((res: any) => {
-  //   //     console.log(res.duration)
-  //   //   })
-  //   //   .catch((err: any) => {
-  //   //     console.log(err);
-  //   //   });
-  // }
-
-  // const stopHandler = () => {
-  //   testEmitter.emit('clickHandler', 1.2)
-  //   //axios.test2();
-  //   // axios
-  //   //   .get("https://dummy.restapiexample.com/api/v1/employees")
-  //   //   .then((res: any) => {
-  //   //     console.log(res.duration)
-  //   //   })
-  //   //   .catch((err: any) => {
-  //   //     console.log(err);
-  //   //   });
-  // }
-
-  const exceptionhandler = (error: any, isFatal: any) => {
+  const exceptionhandler: any = (error: any, isFatal: any) => {
     // your error handler function
+    Grafana.sendLog(`8:1${error}`)
     console.log("ERROR--------111", error)
   };
 
-  setJSExceptionHandler(exceptionhandler, true);
-
+  Grafana.setJSExceptionHandler(exceptionhandler, true);
 
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -223,33 +138,38 @@ function App(): React.JSX.Element {
   //NativeFunction.stopMonitoring();
   const a: any = {}
   return (
-    <ErrorBoundary FallbackComponent={CustomFallback} onError={() => { console.log("Hi error") }}>
-      <SafeAreaView style={backgroundStyle}>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={backgroundStyle.backgroundColor}
-        />
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={backgroundStyle}>
-          <Header />
-          <View
-            style={{
-              backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            }}>
-            <TouchableOpacity style={styles.touch} onPress={startHandler}>
-              <Text style={styles.touchText}>Start</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.touch} onPress={stopHandler}>
-              <Text style={styles.touchText}>Stop</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.touch} onPress={connectWebSocket}>
-              <Text style={styles.touchText}>connect</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </ErrorBoundary>
+    <SafeAreaView style={backgroundStyle}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={backgroundStyle.backgroundColor}
+      />
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={backgroundStyle}>
+        <Header />
+        <View
+          style={{
+            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+          }}>
+          <TouchableOpacity style={styles.touch} onPress={startHandler}>
+            <Text style={styles.touchText}>Start</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.touch} onPress={stopHandler}>
+            <Text style={styles.touchText}>Stop</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.touch} onPress={makeError}>
+            <Text style={styles.touchText}>Error</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.touch} onPress={apiCallHandler2}>
+            <Text style={styles.touchText}>Api call success</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.touch} onPress={apiCallHandler1}>
+            <Text style={styles.touchText}>Api call failed</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+
   );
 }
 
