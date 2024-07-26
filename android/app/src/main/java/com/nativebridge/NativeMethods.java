@@ -7,6 +7,8 @@ import android.app.NotificationManager;
 import android.app.NotificationChannel;
 import androidx.core.app.NotificationCompat;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.util.Log;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -35,11 +37,6 @@ public class NativeMethods extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void checkDeviceModel(Promise promise){
-        CommonUtils.getAppCpuUsage(mContext);
-        promise.resolve(false);
-    }
-    @ReactMethod
     public void checkRam(Promise promise) {
         promise.resolve(CommonUtils.monitorRamUsage(mContext).toString());
     }
@@ -47,5 +44,21 @@ public class NativeMethods extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setThreshold(String val,String type) {
         CommonUtils.setThreshold(Integer.parseInt(val),type);
+    }
+
+    @ReactMethod
+    public void checkCpu(Promise promise) throws PackageManager.NameNotFoundException {
+//        Log.d("",String.valueOf(CommonUtils.getAppCpuUsage(mContext)));
+        promise.resolve(String.valueOf(CommonUtils.getCurrentAppRamUsage(mContext)));
+    }
+
+    @ReactMethod
+    public void currentAppRamUsage(Promise promise) {
+        promise.resolve(String.valueOf(CommonUtils.getCurrentAppRamUsage(mContext)));
+    }
+
+    @ReactMethod
+    public void currentAppProcessorUsage(Promise promise){
+        promise.resolve(String.valueOf(CommonUtils.getCurrentAppCpuUsage()));
     }
 }
