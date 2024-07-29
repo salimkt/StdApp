@@ -27,6 +27,8 @@ import Grafana from 'react-native-grafana'
 import { NavigationAction, NavigationContainer, NavigationState, useNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+console.log("Test1234567----------", ErrorUtils)
+
 const Stack = createNativeStackNavigator();
 
 const TestScreen1 = ({ navigation }: any) => {
@@ -42,7 +44,7 @@ const TestScreen1 = ({ navigation }: any) => {
     </View>
   )
 }
-const TestScreen2 = ({ navigation }: any) => {
+const TestScreen2: any = ({ navigation }: any) => {
   const navigationHadler = () => {
     TestScreen2.test();
     navigation.navigate("Homer")
@@ -59,7 +61,7 @@ const TestScreen2 = ({ navigation }: any) => {
 
 const HomeScreen = ({ navigation }: any): React.JSX.Element => {
 
-  console.log("Test---------", Platform)
+  console.log("Test-----test----")
 
   const appState = useRef(AppState.currentState);
 
@@ -72,10 +74,10 @@ const HomeScreen = ({ navigation }: any): React.JSX.Element => {
       appState.current.match(/inactive|background/) &&
       nextAppState === "active"
     ) {
-      Grafana.sendLog("10:2");
+      Grafana.sendLog({ code: "10:2" });
     } else {
       appState.current = nextAppState;
-      Grafana.sendLog("10:1");
+      Grafana.sendLog({ code: "10:1" });
     }
   }
 
@@ -89,18 +91,18 @@ const HomeScreen = ({ navigation }: any): React.JSX.Element => {
 
 
   const startHandler = () => {
-    Grafana.sendLog("1:1:1");
+    Grafana.sendLog({ code: "1:1" });
   }
 
   const stopHandler = () => {
-    Grafana.sendLog("1:1:2");
+    Grafana.sendLog({ code: "1:1" });
   }
 
-  const makeError = () => {
-    Grafana.sendLog("1:1:3");
+  const makeError: any = () => {
+    Grafana.sendLog({ code: "1:2" });
 
     //undefined error- test() not defined
-    Grafana.test();
+    makeError.test();
   }
 
   const navigationHadler1 = () => {
@@ -114,35 +116,6 @@ const HomeScreen = ({ navigation }: any): React.JSX.Element => {
     navigation.navigate("Test")
   }
 
-  (async () => {
-    axios.interceptors.request.use(
-      function (req: any) {
-        req.time = { startTime: new Date() };
-        console.log("CHECK----AXIOS--req", req)
-        Grafana.sendLog("5:1");
-        return req;
-      },
-      (err: any) => {
-        Grafana.sendLog("5:2");
-        return Promise.reject(err);
-      }
-    );
-
-    axios.interceptors.response.use(
-      function (res: any) {
-        Grafana.sendLog("5:3");
-        res.config.time.endTime = new Date();
-        res.duration =
-          res.config.time.endTime - res.config.time.startTime;
-        return res;
-      },
-      (err: any) => {
-        Grafana.sendLog("5:4");
-        console.log("CHECK----AXIOS--err", err)
-        return Promise.reject(err);
-      }
-    );
-  })();
 
   const apiCallHandler1 = () => {
     axios
@@ -168,7 +141,7 @@ const HomeScreen = ({ navigation }: any): React.JSX.Element => {
 
   const exceptionhandler: any = (error: any, isFatal: any) => {
     // your error handler function
-    Grafana.sendLog(`8:1${error}`)
+    Grafana.sendLog({ code: "8:1", message: error })
     console.log("ERROR--------111", error)
   };
 
@@ -233,12 +206,12 @@ const App = () => {
   const stateChangeHandler = (state: NavigationState | undefined) => {
     console.log("State---", state)
     const routeData = JSON.stringify(state?.routes)
-    Grafana.sendLog(routeData);
+    // Grafana.sendLog(routeData);
   }
 
   const navigationErrorHandler = (error: NavigationAction) => {
     console.log("Using Fallback", error)
-    Grafana.sendLog(JSON.stringify(error));
+    // Grafana.sendLog(JSON.stringify(error));
   }
 
   return (
