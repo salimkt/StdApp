@@ -141,7 +141,7 @@ const HomeScreen = ({ navigation }: any): React.JSX.Element => {
 
   const exceptionhandler: any = (error: any, isFatal: any) => {
     // your error handler function
-    Grafana.sendLog({ code: "8:1", message: error })
+    Grafana.sendLog({ code: "8:1", message: JSON.stringify(error) })
     console.log("ERROR--------111", error)
   };
 
@@ -201,17 +201,15 @@ const HomeScreen = ({ navigation }: any): React.JSX.Element => {
 }
 
 const App = () => {
-
-
   const stateChangeHandler = (state: NavigationState | undefined) => {
     console.log("State---", state)
     const routeData = JSON.stringify(state?.routes)
-    // Grafana.sendLog(routeData);
+    Grafana.sendLog({ message: JSON.stringify(routeData) });
   }
 
   const navigationErrorHandler = (error: NavigationAction) => {
     console.log("Using Fallback", error)
-    // Grafana.sendLog(JSON.stringify(error));
+    Grafana.sendLog({ message: JSON.stringify(error) });
   }
 
   return (
