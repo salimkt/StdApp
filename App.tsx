@@ -27,8 +27,6 @@ import {
 } from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-console.log('Test1234567----------', ErrorUtils);
-
 const Stack = createNativeStackNavigator();
 
 const TestScreen1 = ({navigation}: any) => {
@@ -78,7 +76,6 @@ const HomeScreen = ({navigation}: any): React.JSX.Element => {
   const makeError = () => {
     makeError.test();
     Grafana.sendLog({code: '1:2'});
-
     //undefined error- test() not defined
   };
 
@@ -116,7 +113,6 @@ const HomeScreen = ({navigation}: any): React.JSX.Element => {
   };
 
   const isDarkMode = useColorScheme() === 'dark';
-
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
