@@ -5,9 +5,8 @@
  * @format
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import {
-  AppState,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -77,11 +76,11 @@ const HomeScreen = ({ navigation }: any): React.JSX.Element => {
   };
 
   const stopHandler = () => {
-    Grafana.sendLog({ code: '1:1' });
-  };
+    Grafana.sendLog({ code: "1:1" });
+  }
 
   const makeError: any = () => {
-    Grafana.sendLog({ code: '1:2' });
+    Grafana.sendLog({ code: "1:2" });
 
     //undefined error- test() not defined
     makeError.test();
@@ -120,16 +119,7 @@ const HomeScreen = ({ navigation }: any): React.JSX.Element => {
       });
   };
 
-  const exceptionhandler: any = (error: any, isFatal: any) => {
-    // your error handler function
-    Grafana.sendLog({ code: '8:1', message: error });
-    console.log('ERROR--------111', error);
-  };
-
-  Grafana.setJSExceptionHandler(exceptionhandler, true);
-
   const isDarkMode = useColorScheme() === 'dark';
-
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
