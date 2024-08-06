@@ -11,7 +11,6 @@
     "env": "npx react-native doctor"
   },
   "dependencies": {
-    "@logrocket/react-native": "^1.33.7",
     "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.10.1",

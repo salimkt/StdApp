@@ -5,9 +5,8 @@
  * @format
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, {useEffect} from 'react';
 import {
-  AppState,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -15,137 +14,106 @@ import {
   Text,
   TouchableOpacity,
   useColorScheme,
-  View, Platform
+  View,
 } from 'react-native';
 
-import {
-  Colors,
-  Header,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors, Header} from 'react-native/Libraries/NewAppScreen';
 import axios from 'axios';
-import Grafana from 'react-native-grafana'
-import { NavigationAction, NavigationContainer, NavigationState, useNavigationContainerRef } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Grafana from 'react-native-grafana';
+import {
+  NavigationAction,
+  NavigationContainer,
+  NavigationState,
+} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-console.log("Test1234567----------", ErrorUtils)
+console.log('Test1234567----------', ErrorUtils);
 
 const Stack = createNativeStackNavigator();
 
-const TestScreen1 = ({ navigation }: any) => {
+const TestScreen1 = ({navigation}: any) => {
   const navigationHadler = () => {
-    navigation.navigate("Home")
-  }
+    navigation.navigate('Home');
+  };
   return (
     <View>
       <Text>TestScreen1</Text>
       <TouchableOpacity style={styles.touch} onPress={navigationHadler}>
-        <Text style={styles.touchText}>{"<---Home Screen"}</Text>
+        <Text style={styles.touchText}>{'<---Home Screen'}</Text>
       </TouchableOpacity>
     </View>
-  )
-}
-const TestScreen2: any = ({ navigation }: any) => {
+  );
+};
+const TestScreen2: any = ({navigation}: any) => {
   const navigationHadler = () => {
     TestScreen2.test();
-    navigation.navigate("Homer")
-  }
+    navigation.navigate('Homer');
+  };
   return (
     <View>
       <Text>TestScreen1</Text>
       <TouchableOpacity style={styles.touch} onPress={navigationHadler}>
-        <Text style={styles.touchText}>{"<---Home Screen"}</Text>
+        <Text style={styles.touchText}>{'<---Home Screen'}</Text>
       </TouchableOpacity>
     </View>
-  )
-}
+  );
+};
 
-const HomeScreen = ({ navigation }: any): React.JSX.Element => {
-
-  console.log("Test-----test----")
-
-  const appState = useRef(AppState.currentState);
-
+const HomeScreen = ({navigation}: any): React.JSX.Element => {
   useEffect(() => {
-    Grafana.init({ uri: "test", sessionId: 123 });
-  }, [])
-
-  const _handleAppStateChange = (nextAppState: any) => {
-    if (
-      appState.current.match(/inactive|background/) &&
-      nextAppState === "active"
-    ) {
-      Grafana.sendLog({ code: "10:2" });
-    } else {
-      appState.current = nextAppState;
-      Grafana.sendLog({ code: "10:1" });
-    }
-  }
-
-  useEffect(() => {
-    const backgroundHandler = AppState.addEventListener("change", _handleAppStateChange);
-    return () => {
-      backgroundHandler.remove();
-    };
-
-  }, [])
-
+    Grafana.init({
+      uri: 'https://nodejsws-pfnq.onrender.com',
+      setexception: false,
+    });
+  }, []);
 
   const startHandler = () => {
-    Grafana.sendLog({ code: "1:1" });
-  }
+    Grafana.sendLog({code: '1:1'});
+  };
 
   const stopHandler = () => {
-    Grafana.sendLog({ code: "1:1" });
-  }
+    Grafana.sendLog({code: '1:1'});
+  };
 
-  const makeError: any = () => {
-    Grafana.sendLog({ code: "1:2" });
+  const makeError = () => {
+    makeError.test();
+    Grafana.sendLog({code: '1:2'});
 
     //undefined error- test() not defined
-    makeError.test();
-  }
+  };
 
   const navigationHadler1 = () => {
-    navigation.navigate("Test1")
-  }
+    navigation.navigate('Test1');
+  };
   const navigationHadler2 = () => {
-    navigation.navigate("Test2")
-  }
+    navigation.navigate('Test2');
+  };
 
   const navigationErrorHadler = () => {
-    navigation.navigate("Test")
-  }
-
+    navigation.navigate('Test');
+  };
 
   const apiCallHandler1 = () => {
     axios
-      .get("https://dummy.restapiexample.com/api//employees")
+      .get('https://dummy.restapiexample.com/api//employees')
       .then((res: any) => {
-        console.log(res.duration)
+        console.log(res.duration);
       })
       .catch((err: any) => {
         console.log(err);
       });
-  }
+  };
 
   const apiCallHandler2 = () => {
     axios
-      .get("https://dummy.restapiexample.com/api/v1/employees")
+      .get('https://dummy.restapiexample.com/api/v1/employees')
       .then((res: any) => {
-        console.log(res.duration)
+        console.log(res.duration);
       })
       .catch((err: any) => {
         console.log(err);
       });
-  }
-
-  const exceptionhandler: any = (error: any, isFatal: any) => {
-    // your error handler function
-    Grafana.sendLog({ code: "8:1", message: JSON.stringify(error) })
-    console.log("ERROR--------111", error)
   };
-
-  Grafana.setJSExceptionHandler(exceptionhandler, true);
 
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -154,7 +122,7 @@ const HomeScreen = ({ navigation }: any): React.JSX.Element => {
   };
 
   //NativeFunction.stopMonitoring();
-  const a: any = {}
+  const a: any = {};
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -185,48 +153,56 @@ const HomeScreen = ({ navigation }: any): React.JSX.Element => {
             <Text style={styles.touchText}>Api call failed</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.touch} onPress={navigationHadler1}>
-            <Text style={styles.touchText}>{"Test Screen1 -->"}</Text>
+            <Text style={styles.touchText}>{'Test Screen1 -->'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.touch} onPress={navigationHadler2}>
-            <Text style={styles.touchText}>{"Test Screen2 -->"}</Text>
+            <Text style={styles.touchText}>{'Test Screen2 -->'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.touch} onPress={navigationErrorHadler}>
-            <Text style={styles.touchText}>{"Navigation error -->"}</Text>
+          <TouchableOpacity
+            style={styles.touch}
+            onPress={navigationErrorHadler}>
+            <Text style={styles.touchText}>{'Navigation error -->'}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
-
   );
-}
+};
 
 const App = () => {
   const stateChangeHandler = (state: NavigationState | undefined) => {
-    console.log("State---", state)
-    const routeData = JSON.stringify(state?.routes)
-    Grafana.sendLog({ message: JSON.stringify(routeData) });
-  }
+    console.log('State---', state);
+    const routeData = JSON.stringify(state?.routes);
+    Grafana.sendLog({code: '3:1', message: JSON.stringify(routeData)});
+  };
 
   const navigationErrorHandler = (error: NavigationAction) => {
-    console.log("Using Fallback", error)
-    Grafana.sendLog({ message: JSON.stringify(error) });
-  }
+    console.log('Using Fallback-----', typeof error);
+    Grafana.sendLog({code: '3:2', error: JSON.stringify(error)});
+  };
 
   return (
-    <NavigationContainer onStateChange={stateChangeHandler} onUnhandledAction={navigationErrorHandler}>
+    <NavigationContainer
+      onStateChange={stateChangeHandler}
+      onUnhandledAction={navigationErrorHandler}>
       <Stack.Navigator>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Test1" component={TestScreen1} />
         <Stack.Screen name="Test2" component={TestScreen2} />
       </Stack.Navigator>
     </NavigationContainer>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
-  touch: { backgroundColor: "#dddddd", padding: 10, margin: 10, alignSelf: 'center' },
+  touch: {
+    backgroundColor: '#dddddd',
+    padding: 10,
+    margin: 10,
+    alignSelf: 'center',
+  },
   touchText: {
-    fontSize: 22
+    fontSize: 22,
   },
   sectionContainer: {
     marginTop: 32,
